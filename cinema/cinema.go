@@ -1,5 +1,7 @@
 package cinema
 
+import "math"
+
 type Cinema struct {
 	Rows  int
 	Seats int
@@ -13,11 +15,13 @@ const priceSmallRoom = 10
 const priceBigRoom = 8
 
 func (c *Cinema) CalculateProfit() int {
-	seats := c.Rows * c.Seats
-	if seats < 60 {
-		return seats * priceSmallRoom
+	s := c.Rows * c.Seats
+	if s < 60 {
+		return s * priceSmallRoom
 	} else {
-		return seats / 2 * (priceBigRoom + priceSmallRoom)
+		frontRowsProfit := math.Floor(float64(c.Rows)/2) * float64(c.Seats*priceSmallRoom)
+		backRowsProfit := math.Ceil(float64(c.Rows)/2) * float64(c.Seats*priceBigRoom)
+		return int(frontRowsProfit + backRowsProfit)
 	}
 
 }
