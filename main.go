@@ -3,21 +3,44 @@ package main
 import (
 	"errors"
 	"fmt"
-	"kotalbert/cinema-room-manager/cinema"
+	"math"
 	"os"
 )
+
+const priceSmallRoom = 10
+const priceBigRoom = 8
 
 func main() {
 
 	rows := getRows()
 	seats := getSeats()
 
-	c := cinema.NewCinema(rows, seats)
+	c := NewCinema(rows, seats)
 	profit := c.CalculateProfit()
 	fmt.Printf("Total income:\n$%d", profit)
 
 }
 
+type Cinema struct {
+	Rows  int
+	Seats int
+}
+
+func NewCinema(rows, seats int) *Cinema {
+	return &Cinema{rows, seats}
+}
+
+func (c *Cinema) CalculateProfit() int {
+	s := c.Rows * c.Seats
+	if s < 60 {
+		return s * priceSmallRoom
+	} else {
+		frontRowsProfit := math.Floor(float64(c.Rows)/2) * float64(c.Seats*priceSmallRoom)
+		backRowsProfit := math.Ceil(float64(c.Rows)/2) * float64(c.Seats*priceBigRoom)
+		return int(frontRowsProfit + backRowsProfit)
+	}
+
+}
 func getSeats() int {
 	fmt.Println("Enter the number of seats in each row:")
 	seats, err := getIntFromUser()
