@@ -1,16 +1,49 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"kotalbert/cinema-room-manager/cinema"
+	"os"
+)
 
 func main() {
-	cinema := `Cinema:
-  1 2 3 4 5 6 7 8
-1 S S S S S S S S
-2 S S S S S S S S
-3 S S S S S S S S
-4 S S S S S S S S
-5 S S S S S S S S
-6 S S S S S S S S
-7 S S S S S S S S`
-	fmt.Println(cinema)
+
+	rows := getRows()
+	seats := getSeats()
+
+	c := cinema.NewCinema(rows, seats)
+	profit := c.CalculateProfit()
+	fmt.Printf("Total income:\n$%d", profit)
+
+}
+
+func getSeats() int {
+	fmt.Println("Enter the number of seats in each row:")
+	seats, err := getIntFromUser()
+	checkError(err)
+	return seats
+}
+
+func getRows() int {
+	fmt.Println("Enter the number of rows:")
+	rows, err := getIntFromUser()
+	checkError(err)
+	return rows
+}
+
+func checkError(err error) {
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+}
+
+func getIntFromUser() (int, error) {
+	var input int
+	_, err := fmt.Scan(&input)
+	if err != nil {
+		return -1, errors.New("error reading from user")
+	}
+	return input, nil
 }

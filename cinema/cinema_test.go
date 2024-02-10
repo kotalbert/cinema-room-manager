@@ -15,3 +15,10 @@ func TestCalculateProfitForBigRoom(t *testing.T) {
 		t.Error("Expected 648 but got", c.CalculateProfit())
 	}
 }
+
+func TestCalculateProfitForOddNumberOfRows(t *testing.T) {
+	c := NewCinema(9, 7)
+	if c.CalculateProfit() != 560 {
+		t.Error("Expected 560 but got", c.CalculateProfit())
+	}
+}
