@@ -109,7 +109,7 @@ func getIntFromUser() (int, error) {
 func (c *Cinema) getCinemaString() string {
 
 	b := strings.Builder{}
-
+	b.WriteByte(' ')
 	for i := 0; i <= c.Rows; i++ {
 		for j := 0; j <= c.Seats; j++ {
 			if i == 0 {
@@ -144,10 +144,11 @@ func (c *Cinema) ToString() string {
 	b.WriteString("Cinema:\n")
 	for i := 0; i < len(cs); i++ {
 		b.WriteByte(cs[i])
-		if i%c.Seats == 0 {
+		if i%(2*c.Seats+2) == 0 {
 			b.WriteByte('\n')
 		}
 	}
+	b.WriteByte('\n')
 	return b.String()
 }
 
