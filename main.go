@@ -15,6 +15,7 @@ func main() {
 	rows := getRows()
 	seats := getSeats()
 	c := NewCinema(rows, seats)
+	fmt.Print(c.ToString())
 	for {
 		row := getBookingRow()
 		seat := getBookingSeat()
@@ -29,8 +30,8 @@ func main() {
 				break
 			}
 		}
+		fmt.Print(c.ToString())
 	}
-	fmt.Println(c.ToString())
 
 }
 
@@ -105,8 +106,48 @@ func getIntFromUser() (int, error) {
 	return input, nil
 }
 
-func (c *Cinema) ToString() string {
+func (c *Cinema) getCinemaString() string {
+
 	b := strings.Builder{}
+
+	for i := 0; i <= c.Rows; i++ {
+		for j := 0; j <= c.Seats; j++ {
+			if i == 0 {
+				if j == 0 {
+					b.Write([]byte("  "))
+				} else {
+					b.WriteString(fmt.Sprintf("%d ", j))
+				}
+			} else {
+				if j == 0 {
+					b.WriteString(fmt.Sprintf("%d ", i))
+				} else {
+					if c.IsSeatBooked(i, j) {
+						b.Write([]byte("B "))
+					} else {
+						b.Write([]byte("S "))
+					}
+				}
+			}
+		}
+	}
+
+	return b.String()
+}
+
+// ToString takes a getCinemaString and inserts a new line after every row
+//
+//	The result should be a grid with row and seat numbers as well as the bookings
+func (c *Cinema) ToString() string {
+	cs := c.getCinemaString()
+	b := strings.Builder{}
+	b.WriteString("Cinema:\n")
+	for i := 0; i < len(cs); i++ {
+		b.WriteByte(cs[i])
+		if i%c.Seats == 0 {
+			b.WriteByte('\n')
+		}
+	}
 	return b.String()
 }
 
