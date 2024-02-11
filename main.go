@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"strings"
 )
 
 const priceSmallRoom = 10
@@ -14,20 +15,52 @@ func main() {
 
 	rows := getRows()
 	seats := getSeats()
-
 	c := NewCinema(rows, seats)
-	profit := c.CalculateProfit()
-	fmt.Printf("Total income:\n$%d", profit)
+	for {
+		row := getBookingRow()
+		seat := getBookingSeat()
+		if c.IsSeatBooked(row, seat) {
+			fmt.Println("That ticket has already been purchased!")
+		} else {
+			c.BookSeat(row, seat)
+			p := c.getTicketPrice(row)
+			fmt.Printf("Ticket price: $%d\n", p)
+			if c.Rows*c.Seats == len(c.Bookings) {
+				fmt.Println("Cinema is full!")
+				break
+			}
+		}
+	}
+	fmt.Println(c.ToString())
 
+}
+
+type Booking struct {
+	Row  int
+	Seat int
 }
 
 type Cinema struct {
-	Rows  int
-	Seats int
+	Rows     int
+	Seats    int
+	Bookings []Booking
 }
 
 func NewCinema(rows, seats int) *Cinema {
-	return &Cinema{rows, seats}
+	return &Cinema{Rows: rows, Seats: seats}
+}
+
+func (c *Cinema) BookSeat(row, seat int) {
+	c.Bookings = append(c.Bookings, Booking{Row: row, Seat: seat})
+}
+
+func (c *Cinema) IsSeatBooked(row, seat int) bool {
+	for _, b := range c.Bookings {
+		if b.Row == row && b.Seat == seat {
+			return true
+		}
+	}
+	return false
 }
 
 func (c *Cinema) CalculateProfit() int {
@@ -54,6 +87,19 @@ func getRows() int {
 	checkError(err)
 	return rows
 }
+func getBookingRow() int {
+	fmt.Println("Enter a row number:")
+	row, err := getIntFromUser()
+	checkError(err)
+	return row
+}
+
+func getBookingSeat() int {
+	fmt.Println("Enter a seat number in that row:")
+	seat, err := getIntFromUser()
+	checkError(err)
+	return seat
+}
 
 func checkError(err error) {
 	if err != nil {
@@ -69,4 +115,22 @@ func getIntFromUser() (int, error) {
 		return -1, errors.New("error reading from user")
 	}
 	return input, nil
+}
+
+func (c *Cinema) ToString() string {
+	b := strings.Builder{}
+	return b.String()
+}
+
+func (c *Cinema) getTicketPrice(row int) int {
+	if c.Rows*c.Seats < 60 {
+		return priceSmallRoom
+	} else {
+		if row <= c.Rows/2 {
+			return priceSmallRoom
+		} else {
+			return priceBigRoom
+		}
+	}
+
 }
