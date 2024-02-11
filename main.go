@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"os"
 	"strings"
 )
@@ -15,24 +16,51 @@ func main() {
 	rows := getRows()
 	seats := getSeats()
 	c := NewCinema(rows, seats)
-	fmt.Print(c.ToString())
+
 	for {
-		row := getBookingRow()
-		seat := getBookingSeat()
-		if c.IsSeatBooked(row, seat) {
-			fmt.Println("That ticket has already been purchased!")
-		} else {
-			c.BookSeat(row, seat)
-			p := c.getTicketPrice(row)
-			fmt.Printf("Ticket price: $%d\n", p)
-			if c.Rows*c.Seats == len(c.Bookings) {
-				fmt.Println("Cinema is full!")
-				break
-			}
+		fmt.Println("1. Show the seats")
+		fmt.Println("2. Buy a ticket")
+		fmt.Println("3. Statistics")
+		fmt.Println("0. Exit")
+		menuInput, err := getIntFromUser()
+		checkError(err)
+		switch menuInput {
+		case 0:
+			return
+		case 1:
+			fmt.Print(c.ToString())
+		case 2:
+			HandleBooking(c)
+		case 3:
+			HandleStatistics(c)
 		}
-		fmt.Print(c.ToString())
 	}
 
+}
+
+func HandleStatistics(c *Cinema) {
+	fmt.Printf("Number of purchased tickets: %d\n", len(c.Bookings))
+	percentage := float64(len(c.Bookings)) / float64(c.Rows*c.Seats) * 100
+	fmt.Printf("Percentage: %.2f%%\n", percentage)
+	fmt.Printf("Current income: $%d\n", c.getCurrentIncome())
+	fmt.Printf("Total income: $%d\n", c.getTotalIncome())
+}
+
+func HandleBooking(c *Cinema) {
+	row := getBookingRow()
+	seat := getBookingSeat()
+	if c.IsSeatBooked(row, seat) {
+		fmt.Println("That ticket has already been purchased!")
+	} else {
+		c.BookSeat(row, seat)
+		p := c.getTicketPrice(row)
+		fmt.Printf("Ticket price: $%d\n", p)
+		if c.Rows*c.Seats == len(c.Bookings) {
+			fmt.Println("Cinema is full!")
+			return
+		}
+	}
+	fmt.Print(c.ToString())
 }
 
 type Booking struct {
@@ -163,4 +191,23 @@ func (c *Cinema) getTicketPrice(row int) int {
 		}
 	}
 
+}
+
+func (c *Cinema) getTotalIncome() int {
+	s := c.Rows * c.Seats
+	if s < 60 {
+		return s * priceSmallRoom
+	} else {
+		frontRowsProfit := math.Floor(float64(c.Rows)/2) * float64(c.Seats*priceSmallRoom)
+		backRowsProfit := math.Ceil(float64(c.Rows)/2) * float64(c.Seats*priceBigRoom)
+		return int(frontRowsProfit + backRowsProfit)
+	}
+}
+
+func (c *Cinema) getCurrentIncome() int {
+	var sum int
+	for _, b := range c.Bookings {
+		sum += c.getTicketPrice(b.Row)
+	}
+	return sum
 }
