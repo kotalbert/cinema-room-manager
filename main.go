@@ -33,6 +33,9 @@ func main() {
 			HandleBooking(c)
 		case 3:
 			HandleStatistics(c)
+		default:
+			fmt.Println("Wrong input")
+			continue
 		}
 	}
 
@@ -47,20 +50,30 @@ func HandleStatistics(c *Cinema) {
 }
 
 func HandleBooking(c *Cinema) {
-	row := getBookingRow()
-	seat := getBookingSeat()
-	if c.IsSeatBooked(row, seat) {
-		fmt.Println("That ticket has already been purchased!")
-	} else {
-		c.BookSeat(row, seat)
-		p := c.getTicketPrice(row)
-		fmt.Printf("Ticket price: $%d\n", p)
-		if c.Rows*c.Seats == len(c.Bookings) {
-			fmt.Println("Cinema is full!")
-			return
+
+	for {
+		row := getBookingRow()
+		seat := getBookingSeat()
+		// Check if coordinates are valid
+		if row > c.Rows || seat > c.Seats {
+			fmt.Println("Wrong input!")
+			continue
+		} else {
+
+			if c.IsSeatBooked(row, seat) {
+				fmt.Println("That ticket has already been purchased!")
+				continue
+			} else {
+				c.BookSeat(row, seat)
+				p := c.getTicketPrice(row)
+				fmt.Printf("Ticket price: $%d\n", p)
+				return
+			}
+
 		}
+
 	}
-	fmt.Print(c.ToString())
+
 }
 
 type Booking struct {
