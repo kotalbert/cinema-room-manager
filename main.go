@@ -141,7 +141,7 @@ func (c *Cinema) getCinemaString() string {
 func (c *Cinema) ToString() string {
 	cs := c.getCinemaString()
 	b := strings.Builder{}
-	b.WriteString("Cinema:\n")
+	b.WriteString("Cinema:")
 	for i := 0; i < len(cs); i++ {
 		b.WriteByte(cs[i])
 		if i%(2*c.Seats+2) == 0 {
